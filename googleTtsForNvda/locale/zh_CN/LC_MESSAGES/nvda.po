@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Google TTS for NVDA 0.5.5\n"
+"Project-Id-Version: Google TTS for NVDA 0.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-10 00:00+0700\n"
 "PO-Revision-Date: 2026-07-20 02:14+0700\n"
@@ -75,6 +75,9 @@ msgstr "自动语言配置文件使用已选中的已安装语言配置文件。
 
 msgid "Available"
 msgstr "可用"
+
+msgid "Background browser runtime status"
+msgstr "后台浏览器运行环境状态"
 
 msgid "Bengali (Bangladesh)"
 msgstr "孟加拉语（孟加拉国）"
@@ -305,6 +308,12 @@ msgstr "爪哇语"
 msgid "Kannada"
 msgstr "卡纳达语"
 
+msgid "Keep Google TTS browser runtime ready in the background"
+msgstr "在后台保持 Google TTS 浏览器运行环境就绪"
+
+msgid "&Keep Google TTS browser runtime ready in the background"
+msgstr "在后台保持 Google TTS 浏览器运行环境就绪(&K)"
+
 msgid "Kashmiri"
 msgstr "克什米尔语"
 
@@ -364,6 +373,19 @@ msgstr "挪威博克马尔语"
 
 msgid "Odia"
 msgstr "奥里亚语"
+
+msgid "Off. Google TTS For NVDA will start the browser runtime only when you choose Google TTS as the current synthesizer."
+msgstr "已关闭。只有在您选择 Google TTS 作为当前语音合成器时，Google TTS For NVDA 才会启动浏览器运行环境。"
+
+msgid "On. Google TTS For NVDA is the current synthesizer, so no separate background browser runtime will be started."
+msgstr "已启用。Google TTS For NVDA 已是当前语音合成器，因此不会另行启动后台浏览器运行环境。"
+
+msgid ""
+"On. After you press OK or Apply, Google TTS For NVDA can keep the browser runtime ready in the background. "
+"This may use more memory and keep runtime files open until you turn it off or exit NVDA."
+msgstr ""
+"已启用。按“确定”或“应用”后，Google TTS For NVDA 可在后台保持浏览器运行环境就绪。"
+"这可能会占用更多内存，并使运行环境文件保持打开状态，直到您关闭此选项或退出 NVDA。"
 
 msgid "Opens the Google TTS Voice Manager."
 msgstr "打开 Google TTS 声音管理器。"
@@ -964,10 +986,12 @@ msgstr "缩短所有停顿"
 
 #: manifest.ini:changelog
 msgid ""
-"Version 0.5.5:\n"
-"- Improved automatic language profile matching across CLD2 and Google TTS language-code aliases, including Filipino/Tagalog, Javanese, legacy Hebrew codes, Norwegian variants, Arabic, and Simplified, Traditional, and Cantonese Chinese mappings.\n"
-"- Rebuilt the bundled CLD2 Windows DLLs with MSVC instead of MinGW-w64 so the packaged add-on no longer triggers the previous false-positive antivirus detection in VirusTotal testing."
+"Version 0.6:\n"
+"- Added an optional setting to make Google TTS ready faster when switching from another synthesizer. This setting is off by default; when turned on, it may use more memory while NVDA is running.\n"
+"- When this setting is enabled, Google TTS updates its background preparation after you change the selected Chromium browser runtime or install/remove voice packages.\n"
+"- Improved reliability when switching away from Google TTS, especially while speech or voice preparation is still stopping."
 msgstr ""
-"0.5.5 版本：\n"
-"- 改进了 CLD2 与 Google TTS 之间语言代码别名的自动语言配置文件匹配，包括菲律宾语（他加禄语）、爪哇语、旧版希伯来语代码、挪威语变体、阿拉伯语以及简体中文、繁体中文和粤语的映射。\n"
-"- 使用 MSVC 替代 MinGW-w64 重新构建了随附的 Windows CLD2 DLL，使打包后的插件包在 VirusTotal 检测中不再像此前那样出现误报病毒的情况。"
+"0.6 版本：\n"
+"- 新增一项可选设置，以便从其他语音合成器切换回来时更快准备好 Google TTS。此设置默认关闭；启用后，NVDA 运行期间可能会占用更多内存。\n"
+"- 启用此设置后，当您更改所选 Chromium 浏览器运行环境或安装/移除语音包时，Google TTS 会更新其后台准备状态。\n"
+"- 提高了从 Google TTS 切换到其他语音合成器时的可靠性，尤其是在语音播放或语音准备尚未停止时。"
