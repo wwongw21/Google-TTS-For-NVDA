@@ -4,7 +4,7 @@ Review date: **22 October 2026**. All findings remain **OPEN**. This handoff con
 
 **Reviewed source:** [`main` at `2593b5409c29417965cd34db645a63ecdcaf6af7`](https://github.com/wwongw21/Google-TTS-For-NVDA/tree/2593b5409c29417965cd34db645a63ecdcaf6af7).
 
-The full structured handoff is in [report.json](report.json). Historical commands retain their original review-workspace paths; read the prerequisites before running them. Only repository-specific diagnostics listed below are attached.
+The full structured handoff is in [report.json](report.json). Historical commands retain their original review-workspace paths; read the prerequisites before running them. A new portable source probe is attached under [evidence](evidence/portable_probe.json). The original `/workspace/review/edge_nvda.json` and browser-capture logs were not available in this checkout and were not recreated.
 
 ## Audience and required outcome
 
@@ -276,6 +276,8 @@ Microsoft Edge WebView2 is required when Edge is the effective browser runtime; 
 
 10. The localized changelog must match the base manifest version; generated .mo and localized manifests come from source translations.
 
+11. Try the configured browser runtime first, then Chrome, Edge and Brave with duplicates removed. If process startup, speech-page discovery, CDP setup or harness readiness fails, clean up that attempt and try the next usable runtime. Cancellation must stop startup without trying a fallback. If Edge lacks WebView2, skip it when Chrome or Brave can run; show the WebView2 repair prompt only when no usable fallback remains and Edge WebView2 is the blocking condition.
+
 ### Test inventory
 
 No automated interactive/runtime test suite was found. build.sh validates conflicts, Python/JavaScript syntax, source-tree voice-data exclusion and archive structure; build_i18n.py provides concrete localization validation. These checks do not establish NVDA speech or accessibility behavior.
@@ -418,7 +420,7 @@ The translated controls and 0.6 release information are verified using NVDA itse
 
 ## Findings and implementation handoff
 
-### NVDA-1 Low: Simplified Chinese release text and runtime translations are stale
+### NVDA-1 Low: Simplified Chinese release text, help and runtime translations are stale
 
 **Status:** OPEN. [Pinned source](https://github.com/wwongw21/Google-TTS-For-NVDA/blob/2593b5409c29417965cd34db645a63ecdcaf6af7/googleTtsForNvda/locale/zh_CN/manifest.ini#L3).
 
@@ -436,7 +438,7 @@ Simplified Chinese users receive stale release information and English fallback 
 
 #### Repair direction
 
-Update zh_CN source translations/changelog to 0.6, add all new background-runtime setting/status messages, regenerate the .mo and localized manifest, then run the all-locale check.
+Update zh_CN source translations/changelog to 0.6, add all new background-runtime setting/status messages, update the localized help page, regenerate the .mo and localized manifest, then run the all-locale check. Manually compare the translated settings, memory/runtime-file warning and release information with the English help page; `build_i18n.py` does not validate localized help-page content.
 
 #### Verification already obtained
 
@@ -586,7 +588,11 @@ The full long enabled-status message was read from settings.py:506-508 for this 
 
 6. Run python build_i18n.py --check --all-languages; supply a real NVDA locale directory when available to also validate NVDA language-code support.
 
-7. Package and inspect the candidate in an isolated checkout, then verify the Simplified Chinese UI with an actual NVDA installation.
+7. Update googleTtsForNvda/doc/zh_CN/readme.html to describe the background-readiness setting, its extra memory and open-runtime-files warning, and the Version 0.6 release notes.
+
+8. Manually compare the zh_CN and English help pages for the setting, warnings and release information. Record that comparison separately because build_i18n.py checks gettext catalogs/manifests, not localized help-page completeness.
+
+9. Package and inspect the candidate in an isolated checkout, then verify the Simplified Chinese UI with an actual NVDA installation.
 
 #### Invariants
 
@@ -620,6 +626,8 @@ The full long enabled-status message was read from settings.py:506-508 for this 
 
 7. The final archive includes the regenerated zh_CN files and excludes __pycache__, .zvoice data and browser profiles.
 
+8. The translated help page contains the background-readiness setting, the memory/runtime-files warning and Version 0.6 release information, as confirmed by a manual comparison against the English help page.
+
 #### Regression scenarios
 
 1. Background readiness off, on while Google TTS is current, and on while another synth is current.
@@ -647,6 +655,10 @@ The full long enabled-status message was read from settings.py:506-508 for this 
 #### Rollback
 
 Revert the zh_CN source and its generated artifacts together if a translation/layout regression is found, rebuild the package and mark the localization defect OPEN again. Avoid reverting runtime code or changing version/support declarations as part of this translation rollback.
+
+#### Help-page comparison
+
+At the pinned source, the English help page documents the optional background-readiness setting, says it is off by default, and warns that enabling it may use more memory and keep runtime files open until disabled or NVDA exits. The Simplified Chinese help page lists browser selection/status but omits that setting and warning. Its newest release heading is Version 0.5.5, while the English help page includes Version 0.6. The source catalogs and localized manifest are not a completeness check for this HTML help page, so the planned repair includes a direct manual comparison.
 
 #### Detailed handoff validation
 
@@ -970,7 +982,44 @@ NOT RUN
 
 Existing supported Windows packaging entry point; its checks still do not replace actual NVDA runtime acceptance.
 
+### Item 8
+
+#### Name
+
+Pinned-source portable handoff probe
+
+#### Command
+
+```
+python docs/reviews/2026-10-22/evidence/portable_probe.py
+```
+
+#### Prerequisites
+
+1. Python 3
+
+2. Pinned source commit `2593b5409c29417965cd34db645a63ecdcaf6af7` available in the local Git object store
+
+#### Recorded result
+
+PASS: eight source-control-flow probes using fake collaborators. The direct English/zh_CN help comparison confirmed the missing setting/warning and stale 0.5.5 release heading.
+
+#### Interpretation
+
+The probe runs selected functions from the pinned source with fake process, CDP and harness collaborators. It checks runtime order, cleanup/fallback, cancellation and Edge WebView2 selection logic. It does not run native browser processes, WebView2, NVDA, screen-reader accessibility or speech. Native acceptance remains NOT RUN.
+
 ## Remaining acceptance
+
+### Browser-runtime fallback acceptance
+
+**Status:** NOT RUN on native Windows/NVDA. The attached portable probe checks source control flow with fake collaborators only.
+
+1. With each saved runtime configured, confirm it is tried first, followed by Chrome, Edge and Brave with duplicates removed.
+2. Cause a process-launch or speech-page/WebSocket discovery failure after startup; confirm the failed process/profile is cleaned up before the next runtime starts.
+3. Cause CDP connection, domain setup or harness-readiness failure; confirm the failed runtime is closed and the next usable runtime is tried.
+4. Cancel during startup or CDP/harness readiness; confirm cancellation propagates and no fallback runtime starts.
+5. With Edge selected, Edge executable present, WebView2 missing and Brave usable, confirm Edge is skipped and Brave starts without a WebView2 prompt.
+6. With Edge executable present, WebView2 missing and no usable Chrome/Brave fallback, confirm the WebView2 repair prompt is shown. If Edge itself is unavailable, confirm the generic no-runtime message is used.
 
 ### Item 1
 
@@ -1124,15 +1173,33 @@ Updater/runtime installation
 
 3. Do not test by publishing or replacing a real release.
 
+### Item 7
+
+#### Status
+
+NOT RUN
+
+#### Area
+
+Browser-runtime fallback on native Windows/NVDA
+
+#### Criteria
+
+1. Verify configured runtime order, failure cleanup/fallback after process launch and CDP/harness readiness, and cancellation without fallback.
+
+2. Verify Edge without WebView2 falls through to usable Brave without an Edge prompt, and shows the WebView2 repair prompt only when no usable fallback remains.
+
 ## Evidence files
 
-1. /workspace/review/edge_nvda.json
+1. [Portable probe source](evidence/portable_probe.py)
 
-2. /workspace/review/nvda-build-177bd6ea/dist/googleTtsForNvda-0.6.nvda-addon
+2. [Portable probe result](evidence/portable_probe.json)
+
+The historical `/workspace/review/edge_nvda.json`, browser-capture logs and Linux package artifact are not present in this checkout. Their recorded results above remain historical report entries; they are not attached artifacts and were not recreated.
 
 ## Handoff completion
 
-NVDA-1 remains OPEN. The current build artifact is evidence from the uncorrected reviewed snapshot, not a repaired release or a runtime-certified package.
+NVDA-1 remains OPEN. No localization repair or native Windows/NVDA runtime acceptance is claimed. The portable probe is source-level evidence from the pinned snapshot and does not certify a release.
 
 ## Delivery and diagnostic files
 
@@ -1146,15 +1213,17 @@ All findings remain OPEN; documentation transfer only.
 
 ### Portable evidence
 
-This JSON retains the complete repository-specific handoff. Historical /workspace paths are evidence references and prerequisites, not portable hyperlinks. Applicable repository-specific diagnostics are included alongside the report.
+This JSON retains the complete repository-specific handoff. The attached portable probe was captured from the pinned Git source on 22 October 2026. Historical `/workspace` paths are report references only, not portable links to included artifacts.
 
 ### Diagnostics included
 
-None recorded.
+1. `docs/reviews/2026-10-22/evidence/portable_probe.py` — rerunnable source-level probe using fake browser/CDP collaborators.
+
+2. `docs/reviews/2026-10-22/evidence/portable_probe.json` — captured result and limitations.
 
 ### Not included
 
-Original environments, model weights, user data and complete source snapshots are not included. Clone the pinned source and follow the recorded prerequisites. Bug-demonstration scripts intentionally assert pre-fix behavior; they are not a post-fix passing suite.
+The original `/workspace/review/edge_nvda.json`, browser-capture logs and historical Linux package artifact were unavailable in this checkout and were not recreated. Original environments, model weights, user data and complete source snapshots are also not included. The portable probe checks pinned source control flow with fakes; it is not a live runtime test or a substitute for those original artifacts.
 
 
 ## Remaining review limits
