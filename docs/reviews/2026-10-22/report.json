@@ -1,0 +1,697 @@
+{
+  "name": "Google-TTS-For-NVDA",
+  "sha": "2593b5409c29417965cd34db645a63ecdcaf6af7",
+  "branch": "main",
+  "coverage": [
+    "Repository AGENTS constraints",
+    "synth startup/queue/cancel/teardown and speech cache",
+    "browser/CDP bridge and local HTTP path handling",
+    "standby handoff and voice package storage/verification",
+    "catalog/dependency handling",
+    "updater core/download/UI lifecycle",
+    "packaging and localization"
+  ],
+  "findings": [
+    {
+      "id": "NVDA-1",
+      "severity": "Low",
+      "classification": "Confirmed",
+      "file": "googleTtsForNvda/locale/zh_CN/manifest.ini",
+      "lines": "3-5",
+      "relatedFile": "googleTtsForNvda/locale/zh_CN/LC_MESSAGES/nvda.po:965; googleTtsForNvda/doc/zh_CN/readme.html",
+      "evidence": "The zh_CN localized manifest/changelog still begins with version 0.5.5 while the base manifest is 0.6. The all-locale checker reports the missing 0.6 manifest changelog, six missing background-runtime setting/status strings, and an obsolete 0.5.5 msgid. Direct comparison of the pinned help pages also confirms that doc/zh_CN/readme.html omits the optional background-readiness setting and its memory/open-file warning, and has no Version 0.6 release heading; the English help page contains these. The pinned-source portable probe reproduces these documentation gaps.",
+      "impact": "Simplified Chinese users receive stale release information and English fallback text for the new background-readiness feature. The localized help also omits the setting and its memory/runtime-file warning. The all-locale validation fails for this locale; HTML help completeness needs a separate manual comparison.",
+      "recommendation": "Update zh_CN source translations/changelog to 0.6, add all new background-runtime setting/status messages, update googleTtsForNvDA/doc/zh_CN/readme.html with the setting and its memory/runtime-file warning, regenerate the .mo and localized manifest, run the all-locale check, and manually compare translated settings, warnings, and release information against the English help page. build_i18n.py does not validate localized HTML help.",
+      "validation": "python build_i18n.py --check --all-languages reports zh_CN missing the 0.6 manifest changelog/new runtime strings and an obsolete 0.5.5 msgid; ru, uk, vi and zh_TW pass. NVDA locale language-code validation was skipped because NVDA is not installed. Direct pinned-source help comparison confirms the zh_CN setting/warning and Version 0.6 release omissions; post-repair localized-help comparison remains NOT RUN.",
+      "disposition": "Consider",
+      "title": "Simplified Chinese release text, help, and runtime translations are stale",
+      "source_sha": "2593b5409c29417965cd34db645a63ecdcaf6af7",
+      "source_url": "https://github.com/wwongw21/Google-TTS-For-NVDA/blob/2593b5409c29417965cd34db645a63ecdcaf6af7/googleTtsForNvda/locale/zh_CN/manifest.ini#L3"
+    }
+  ],
+  "tests": [
+    "All 30 Python sources compiled using compile(): pass.",
+    "node --check googleTtsForNvda/synthDrivers/googleTtsForNvda/web/bridgeHarness.js: pass.",
+    "python build_i18n.py --check --all-languages: failed for zh_CN; four other locales passed.",
+    "bash build.sh in isolated copy /workspace/review/nvda-build-177bd6ea: all 7 steps passed; produced a 10,765,832-byte archive with manifest at root and no __pycache__ files.",
+    "python docs/reviews/2026-10-22/evidence/portable_probe.py: pass for eight fake-collaborator source-control-flow probes; confirmed zh_CN help-content gap. Native Windows/NVDA runtime not exercised."
+  ],
+  "limitations": [
+    "Windows NVDA, Chrome/Edge/Brave runtime, CLD2 DLL execution, voice package synthesis, screen-reader accessibility, and live cancellation/standby races could not be exercised on Linux.",
+    "No automated runtime test suite found; release builder checks syntax/package structure, which does not prove screen-reader runtime behavior.",
+    "No independently confirmed security vulnerability found in reviewed paths; not a formal security scan.",
+    "The portable source probe uses fake collaborators and does not establish native process, WebSocket, WebView2, NVDA, screen-reader accessibility, or speech behavior.",
+    "The original /workspace/review/edge_nvda.json and browser-capture logs were not present in this checkout; the attached probe is newly generated and does not recreate them."
+  ],
+  "evidence_file": "report.json",
+  "ci_observation": {
+    "repo": "Google-TTS-For-NVDA",
+    "total_count": 0,
+    "runs": []
+  },
+  "inventory": {
+    "repo": "Google-TTS-For-NVDA",
+    "sha": "2593b5409c29417965cd34db645a63ecdcaf6af7",
+    "files": 82,
+    "source_exts": [
+      [
+        ".py",
+        30
+      ],
+      [
+        ".html",
+        8
+      ],
+      [
+        ".json",
+        6
+      ],
+      [
+        ".ini",
+        6
+      ],
+      [
+        ".mo",
+        5
+      ],
+      [
+        ".po",
+        5
+      ],
+      [
+        ".js",
+        5
+      ]
+    ],
+    "tests": 0,
+    "ci": []
+  },
+  "handoff": {
+    "schema_version": 1,
+    "repository": "wwongw21/Google-TTS-For-NVDA",
+    "source_directory": "/workspace/repos/Google-TTS-For-NVDA",
+    "snapshot": {
+      "branch": "main",
+      "commit": "2593b5409c29417965cd34db645a63ecdcaf6af7",
+      "review_date": "2026-10-22",
+      "manifest_version": "0.6"
+    },
+    "audience": [
+      "NVDA add-on maintainer",
+      "Simplified Chinese translator",
+      "Accessibility/runtime acceptance reviewer",
+      "Release packager"
+    ],
+    "outcome": {
+      "summary": "One confirmed Low finding remains OPEN: zh_CN has stale 0.5.5 release information and lacks 0.6 background-runtime strings. Pinned-source comparison also found missing background-readiness help text, its memory/runtime-file warning, and the 0.6 help changelog. Existing Python/JavaScript syntax and isolated Linux packaging checks passed; all-locale validation failed for zh_CN. A new portable source probe covers browser fallback control flow with fake collaborators; native Windows/NVDA acceptance remains NOT RUN.",
+      "review_mode": "Read-only source review, localization validation and isolated packaging check",
+      "source_change_status": "No project source edits, commits, pushes or releases",
+      "scope_limit": "No independently reproduced Windows/NVDA runtime defect was established. Passing syntax and packaging do not establish usable screen-reader speech, cancellation or standby behavior.",
+      "counts": {
+        "open_low": 1,
+        "closed": 0
+      },
+      "release_decision": "Update and validate zh_CN strings, localized help, and release information before representing localization as current. Windows, NVDA, and browser/WASM acceptance still need an actual supported runtime."
+    },
+    "architecture": {
+      "product": "Windows NVDA synthesizer add-on exposing Google's bundled WASM TTS engine through an installed Chromium browser runtime, with user-managed voice packages.",
+      "runtime_flow": [
+        "The global plugin registers settings, voice-manager UI, optional startup update checks and optional background browser-runtime standby preparation.",
+        "SynthDriver loads the bundled engine/catalog, filters installed usable voice packages, creates a WavePlayer and either claims a ready standby bridge or creates one.",
+        "NVDA speech sequences enter a worker queue. The driver segments text, resolves normal settings or automatic language profiles, handles indexes/prosody and uses a short in-memory PCM cache.",
+        "ChromeTtsBridge coordinates BrowserProcessManager, CdpClient and WasmTtsEngineBridge. A loopback HTTP server serves the harness, bundled engine and installed voice packages.",
+        "The selected Chrome/Edge/Brave runtime loads the harness. CDP Runtime.evaluate invokes synthesis; Runtime.bindingCalled returns base64 PCM audio and progress events.",
+        "Python validates PCM and feeds nvwave.WavePlayer. Cancellation and teardown must stop queued/current work and release or terminate browser/CDP resources.",
+        "Voice Manager explicitly downloads/imports/removes packages. The updater independently checks a stable manifest, validates downloaded size/SHA256 and delegates installation to NVDA."
+      ],
+      "components": [
+        {
+          "paths": [
+            "googleTtsForNvda/synthDrivers/googleTtsForNvda/__init__.py"
+          ],
+          "responsibility": "NVDA synth driver, worker queue, settings, language profiles, segmentation, indexes, silence shortening, PCM cache and player lifecycle"
+        },
+        {
+          "paths": [
+            "googleTtsForNvda/synthDrivers/googleTtsForNvda/bridge.py"
+          ],
+          "responsibility": "Loopback server and path handling, browser startup/fallback/profiles, CDP transport, WASM request/events, runtime recycle and cleanup"
+        },
+        {
+          "paths": [
+            "googleTtsForNvda/synthDrivers/googleTtsForNvda/standby.py"
+          ],
+          "responsibility": "Optional background readiness, directory-change watchers, bridge handoff and cancellation"
+        },
+        {
+          "paths": [
+            "googleTtsForNvda/synthDrivers/googleTtsForNvda/catalog.py",
+            "googleTtsForNvda/synthDrivers/googleTtsForNvda/voice_store.py"
+          ],
+          "responsibility": "Engine/catalog inspection, language/speaker/package metadata, dependencies, package storage and size/SHA256 verification caches"
+        },
+        {
+          "paths": [
+            "googleTtsForNvda/synthDrivers/googleTtsForNvda/language_detector.py",
+            "googleTtsForNvda/synthDrivers/googleTtsForNvda/cld2"
+          ],
+          "responsibility": "Automatic language detection and architecture-specific Windows CLD2 DLL selection"
+        },
+        {
+          "paths": [
+            "googleTtsForNvda/synthDrivers/googleTtsForNvda/web/bridgeHarness.js",
+            "googleTtsForNvda/synthDrivers/googleTtsForNvda/WasmTtsEngine/20260723.1"
+          ],
+          "responsibility": "Browser harness and bundled Google WASM engine; audio processing and session-token guarding"
+        },
+        {
+          "paths": [
+            "googleTtsForNvda/globalPlugins/googleTtsForNvda/settings.py",
+            "googleTtsForNvda/globalPlugins/googleTtsForNvda/voiceManager.py",
+            "googleTtsForNvda/globalPlugins/googleTtsForNvda/uiUtils.py"
+          ],
+          "responsibility": "Settings, voice package operations and accessible read-only status controls"
+        },
+        {
+          "paths": [
+            "googleTtsForNvda/globalPlugins/googleTtsForNvda/updater.py",
+            "googleTtsForNvda/globalPlugins/googleTtsForNvda/updateGui.py",
+            "make_update_manifest.py"
+          ],
+          "responsibility": "Stable update metadata, download verification, UI/controller state and release-manifest generation"
+        },
+        {
+          "paths": [
+            "build_i18n.py",
+            "TRANSLATING.md",
+            "googleTtsForNvda/locale"
+          ],
+          "responsibility": "Source-string extraction, translation checks, .mo compilation and localized manifest generation",
+          "review_relevance": "NVDA-1 belongs to this workflow."
+        },
+        {
+          "paths": [
+            "build.bat",
+            "build.sh",
+            "googleTtsForNvda/manifest.ini",
+            "googleTtsForNvda/buildInfo.json"
+          ],
+          "responsibility": "Version/build metadata, syntax/conflict/voice-data checks and .nvda-addon ZIP packaging"
+        }
+      ],
+      "declared_support": {
+        "minimum_nvda": "2024.1.0",
+        "last_tested_nvda_in_manifest": "2026.1.0",
+        "evidence_limit": "These are repository declarations; this review did not run NVDA 2024.1 or 2026.1.",
+        "platforms": "Interactive speech runtime requires Windows and a supported installed Chrome, Edge or Brave browser.",
+        "edge_runtime": "Microsoft Edge WebView2 is required when Edge is the effective browser runtime; Chrome and Brave must not acquire this requirement."
+      },
+      "review_coverage": [
+        "Synth startup/queue/cancel/teardown and speech cache",
+        "Browser/CDP bridge and loopback file routing",
+        "Standby handoff and package verification/storage",
+        "Catalog/dependency handling",
+        "Updater core and UI/controller lifetime",
+        "Localization and build scripts"
+      ],
+      "contracts_to_preserve": [
+        "Voice downloads are explicit Voice Manager actions; speech and preload must never download packages.",
+        "Expose only installed usable voices and preserve dependency relationships.",
+        "Long operations remain off the NVDA GUI thread; workers marshal UI changes through wx.CallAfter.",
+        "Cancellation must remain responsive and late audio must not enter another request or the cache.",
+        "Use focusable read-only controls with real label association for status/help text; localized strings must remain wrapped in the translation mechanism.",
+        "Background readiness remains off by default and disabled in secure mode.",
+        "Keep Chrome/Edge/Brave fallback, runtime-specific profiles, cancellation propagation and bridge ownership intact.",
+        "Retain size/SHA256 verification for packages/updates and the existing loopback path-safety/isolation controls.",
+        "Do not bundle .zvoice files, browser profiles or __pycache__ in the add-on.",
+        "The localized changelog must match the base manifest version; generated .mo and localized manifests come from source translations."
+      ],
+      "test_inventory": "No automated interactive/runtime test suite was found. build.sh validates conflicts, Python/JavaScript syntax, source-tree voice-data exclusion and archive structure; build_i18n.py provides concrete localization validation. These checks do not establish NVDA speech or accessibility behavior."
+    },
+    "immediate_mitigations": [
+      {
+        "finding": "NVDA-1",
+        "action": "Treat zh_CN release notes as stale and consult the current English 0.6 changelog when explaining the new background-readiness setting.",
+        "limit": "This does not translate the new setting/status strings or make the localized package current. Default background readiness remains off; do not silently enable it as a workaround."
+      },
+      {
+        "finding": "NVDA-1",
+        "action": "Keep the localization failure visible in release review and avoid claiming all supported translations are current until the check passes.",
+        "limit": "The normal packaging script can succeed while localization is incomplete because i18n is intentionally a separate workflow."
+      }
+    ],
+    "implementation_sequence": [
+      {
+        "step": 1,
+        "action": "Pin the candidate to the reviewed snapshot and reproduce the zh_CN-only failure using the existing check-only command.",
+        "dependencies": [],
+        "completion": "The existing failure and generated/source ownership are understood; no runtime refactor is needed."
+      },
+      {
+        "step": 2,
+        "action": "Update zh_CN source translations for the 0.6 changelog and every missing background-runtime setting/status message, and update the localized help page with the setting, memory/runtime-file warning, and Version 0.6 notes.",
+        "dependencies": [
+          1
+        ],
+        "findings": [
+          "NVDA-1"
+        ]
+      },
+      {
+        "step": 3,
+        "action": "Remove/retire obsolete 0.5.5 source entries as required by the validator, preserving translator-authored current translations and formatting placeholders.",
+        "dependencies": [
+          2
+        ]
+      },
+      {
+        "step": 4,
+        "action": "Generate zh_CN .mo/localized manifest using build_i18n.py, then run the complete all-locale check.",
+        "dependencies": [
+          3
+        ],
+        "completion": "No zh_CN missing/obsolete source errors; other locale checks remain green."
+      },
+      {
+        "step": 5,
+        "action": "Inspect generated diffs and build the candidate add-on in an isolated checkout using the existing package builder.",
+        "dependencies": [
+          4
+        ],
+        "completion": "Correct translated files are packaged; root manifest and exclusion rules remain correct."
+      },
+      {
+        "step": 6,
+        "action": "Perform Simplified Chinese settings, localized-help, and release-info acceptance on supported Windows NVDA; manually compare settings, warnings, and release information with the English help; separately record broader runtime acceptance still not exercised here.",
+        "dependencies": [
+          5
+        ],
+        "completion": "The translated controls, help-page setting/warning, and Version 0.6 release information are checked against the English help and verified with NVDA where applicable."
+      }
+    ],
+    "findings": [
+      {
+        "id": "NVDA-1",
+        "status": "OPEN",
+        "severity": "Low",
+        "confidence": "Confirmed",
+        "title": "Simplified Chinese localization and help are stale for 0.6 background readiness",
+        "location": {
+          "file": "googleTtsForNvda/locale/zh_CN/manifest.ini",
+          "lines": "3-5"
+        },
+        "related_locations": [
+          {
+            "file": "googleTtsForNvda/locale/zh_CN/LC_MESSAGES/nvda.po",
+            "lines": "965-969",
+            "purpose": "Obsolete 0.5.5 changelog msgid"
+          },
+          {
+            "file": "googleTtsForNvda/globalPlugins/googleTtsForNvda/settings.py",
+            "lines": "274-285",
+            "purpose": "Current translatable background-runtime labels"
+          },
+          {
+            "file": "googleTtsForNvda/globalPlugins/googleTtsForNvda/settings.py",
+            "lines": "499-506",
+            "purpose": "Current translatable background-runtime status messages"
+          },
+          {
+            "file": "googleTtsForNvda/manifest.ini",
+            "lines": "6-14",
+            "purpose": "Current version 0.6 and source changelog"
+          },
+          {
+            "file": "googleTtsForNvda/doc/zh_CN/readme.html",
+            "lines": "Configuration section and release notes",
+            "purpose": "Missing background-readiness setting/warning and Version 0.6 heading"
+          },
+          {
+            "file": "googleTtsForNvda/doc/en/readme.html",
+            "lines": "Configuration section and Version 0.6 release notes",
+            "purpose": "Reference for the setting, memory/runtime-file warning, and current release information"
+          }
+        ],
+        "evidence": "The zh_CN localized manifest/changelog still begins with version 0.5.5 while the base manifest is 0.6. The all-locale checker reports the missing 0.6 manifest changelog, six missing background-runtime setting/status strings, and an obsolete 0.5.5 msgid. Direct comparison of the pinned help pages also confirms that doc/zh_CN/readme.html omits the optional background-readiness setting and its memory/open-file warning, and has no Version 0.6 release heading; the English help page contains these. The pinned-source portable probe reproduces these documentation gaps.",
+        "user_impact": "Simplified Chinese users receive stale release information and English fallback text for the new background-readiness feature. The localized help also omits the setting and its memory/runtime-file warning. The all-locale validation fails for this locale; HTML help completeness needs a separate manual comparison.",
+        "change_surface": [
+          {
+            "file": "googleTtsForNvda/locale/zh_CN/LC_MESSAGES/nvda.po",
+            "ownership": "Translator-authored source; update strings and changelog here."
+          },
+          {
+            "file": "googleTtsForNvda/locale/zh_CN/LC_MESSAGES/nvda.mo",
+            "ownership": "Generated binary; regenerate with build_i18n.py, never hand-edit."
+          },
+          {
+            "file": "googleTtsForNvda/locale/zh_CN/manifest.ini",
+            "ownership": "Generated localized manifest; regenerate from the source catalog."
+          },
+          {
+            "file": "googleTtsForNvda/locale/nvda.pot",
+            "ownership": "Template output may be refreshed by the build workflow; inspect any generated diff before inclusion."
+          },
+          {
+            "file": "googleTtsForNvda/doc/zh_CN/readme.html",
+            "ownership": "Translator-authored help page; update the background-readiness setting, memory/runtime-file warning, and Version 0.6 release notes."
+          }
+        ],
+        "missing_messages": [
+          "&Keep Google TTS browser runtime ready in the background",
+          "Background browser runtime status",
+          "Keep Google TTS browser runtime ready in the background",
+          "Off. Google TTS For NVDA will start the browser runtime only when you choose Google TTS as the current synthesizer.",
+          "On. Google TTS For NVDA is the current synthesizer, so no separate background browser runtime will be started.",
+          "On. After you press OK or Apply, Google TTS For NVDA can keep the browser runtime ready in the background. This may use more memory and keep runtime files open until you turn it off or exit NVDA."
+        ],
+        "missing_message_caveat": "The full long enabled-status message was read from settings.py:506-508 for this handoff; the original checker console abbreviated it. Use current extraction if source changes before implementation.",
+        "concrete_repair_steps": [
+          "Read TRANSLATING.md and use the current extracted source messages; do not translate from a shortened console diagnostic.",
+          "Add reviewed Simplified Chinese translations for the new background-readiness labels/status strings and the exact version 0.6 source changelog.",
+          "Preserve accelerator markers, formatting placeholders, punctuation and multiline PO quoting.",
+          "Retire the obsolete 0.5.5 changelog entry to satisfy the repository's obsolete-source check; do not delete unrelated current translations.",
+          "Run python build_i18n.py --language zh_CN to regenerate the .mo and localized manifest, then inspect the generated files/diff.",
+          "Run python build_i18n.py --check --all-languages; supply a real NVDA locale directory when available to also validate NVDA language-code support.",
+          "Package and inspect the candidate in an isolated checkout, then verify the Simplified Chinese UI with an actual NVDA installation.",
+          "Update googleTtsForNvda/doc/zh_CN/readme.html with the optional background-readiness setting, its default-off behavior, the possible extra-memory/open-runtime-files warning, and the Version 0.6 release notes.",
+          "Manually compare translated settings, warnings, and release information against googleTtsForNvda/doc/en/readme.html. Record this separately because build_i18n.py does not validate localized HTML help content."
+        ],
+        "invariants": [
+          "Runtime behavior and the default-off background-readiness setting do not change.",
+          "zh_CN localized release information describes the same version and feature semantics as the base manifest.",
+          "The enabled-status text accurately states that background readiness may use additional memory and keep runtime files open until disabled or NVDA exits.",
+          "All translated placeholders remain equivalent to source placeholders; accelerators remain usable.",
+          "Generated .mo and localized manifest remain consistent with nvda.po.",
+          "Other locales, voice catalogs, languageSort.json, engine files and package/download behavior are unaffected.",
+          "No translated text promises that browser startup timing is completely fixed."
+        ],
+        "acceptance_criteria": [
+          "The all-locale validator reports no zh_CN missing translation or obsolete source-string errors.",
+          "The localized manifest contains the 0.6 changelog rather than 0.5.5 release information.",
+          "On NVDA with a Simplified Chinese UI, the checkbox, group/status label and off/on messages are translated and understandable.",
+          "The checkbox retains a working accelerator and the status field remains keyboard focusable with its label read before the read-only edit role.",
+          "Settings preview still saves only through OK/Apply; Cancel does not persist a change.",
+          "Other four currently validated locales continue passing.",
+          "The final archive includes the regenerated zh_CN files and excludes __pycache__, .zvoice data and browser profiles.",
+          "The zh_CN help page describes the setting, memory/runtime-file warning, and Version 0.6 release information, confirmed by a manual comparison with the English help page."
+        ],
+        "regression_scenarios": [
+          "Background readiness off, on while Google TTS is current, and on while another synth is current.",
+          "Settings OK/Apply versus Cancel with the runtime-ready checkbox changed.",
+          "Long translated status strings wrap and remain fully readable through keyboard review.",
+          "Translator placeholder/accelerator/multiline quoting mistakes are caught by checks or manual review.",
+          "Fresh installation versus updating an existing add-on: correct localized release information is visible in the resulting package.",
+          "No unrelated locale or normal speech setting changes in the diff."
+        ],
+        "risks": [
+          "Editing generated .mo or manifest directly can appear to fix the archive while the next i18n build overwrites the repair.",
+          "A translation can pass structural checks yet misstate the memory/startup trade-off; native-language review is still needed.",
+          "Longer translated strings may expose Windows dialog layout issues that Linux syntax/build checks cannot detect.",
+          "A full i18n build may refresh a shared template or other generated outputs; keep the final diff restricted and inspect it."
+        ],
+        "rollback": "Revert the zh_CN source and its generated artifacts together if a translation/layout regression is found, rebuild the package and mark the localization defect OPEN again. Avoid reverting runtime code or changing version/support declarations as part of this translation rollback.",
+        "validation": {
+          "recorded_status": "CONFIRMED",
+          "command": "python /workspace/repos/Google-TTS-For-NVDA/build_i18n.py --check --all-languages",
+          "recorded_result": "FAILED for zh_CN; ru, uk, vi and zh_TW passed.",
+          "limitations": "NVDA language-code support check was skipped because no installed NVDA locale folder was available.",
+          "post_repair_status": "NOT RUN",
+          "help_page_comparison": {
+            "status": "CONFIRMED_GAP",
+            "source_commit": "2593b5409c29417965cd34db645a63ecdcaf6af7",
+            "method": "Direct comparison of pinned English and zh_CN HTML help pages, recorded by evidence/portable_probe.py.",
+            "result": "English help includes the default-off background-readiness setting, memory/open-runtime-files warning, and Version 0.6 release notes. zh_CN help has browser selection/status, omits the readiness setting and warning, and its latest release heading is 0.5.5.",
+            "post_repair_comparison": "NOT RUN"
+          },
+          "i18n_html_limit": "build_i18n.py checks gettext catalogs and localized manifests; it does not establish localized HTML help completeness."
+        }
+      }
+    ],
+    "checks_and_reproductions": [
+      {
+        "name": "All-locale check",
+        "command": "python /workspace/repos/Google-TTS-For-NVDA/build_i18n.py --check --all-languages",
+        "prerequisites": [
+          "Python 3.12.14 was used",
+          "Repository source and locale files",
+          "No Windows/NVDA required for structural checks"
+        ],
+        "side_effects": "Check-only; no generated translations written.",
+        "recorded_result": "FAILED for zh_CN only. ru, uk, vi and zh_TW passed the selected structural categories.",
+        "recorded_errors": [
+          "zh_CN: missing translation for manifest changelog beginning Version 0.6",
+          "Missing new background runtime checkbox/name/status translations",
+          "Obsolete source string beginning Version 0.5.5"
+        ],
+        "recorded_warning": "NVDA locale folder was not found; language-code support check is skipped.",
+        "interpretation": "This is the direct reproduction for NVDA-1. Structural translation validation is separate from screen-reader/UI acceptance."
+      },
+      {
+        "name": "Candidate translation regeneration",
+        "command": "python build_i18n.py --language zh_CN\npython build_i18n.py --check --all-languages",
+        "working_directory": "A writable candidate checkout of Google-TTS-For-NVDA",
+        "prerequisites": [
+          "Corrected zh_CN nvda.po",
+          "Python",
+          "Optional real NVDA locale directory via --nvda-locale-dir"
+        ],
+        "recorded_result": "NOT RUN; these are future implementation commands.",
+        "side_effects": "The first command writes the template, .mo and localized manifest; it belongs only in the future authorized repair workflow."
+      },
+      {
+        "name": "Python syntax",
+        "command": "python - <<'PY'\nfrom pathlib import Path\nps = list(Path('/workspace/repos/Google-TTS-For-NVDA').rglob('*.py'))\nfor p in ps:\n    compile(p.read_bytes(), str(p), 'exec')\nprint(len(ps), 'Python files compile')\nPY",
+        "prerequisites": [
+          "Python 3.12.14 was used"
+        ],
+        "recorded_result": "PASS: all 30 Python sources compile.",
+        "interpretation": "Does not import NVDA-only modules, load CLD2 DLLs or run Windows code."
+      },
+      {
+        "name": "Harness JavaScript syntax",
+        "command": "node --check /workspace/repos/Google-TTS-For-NVDA/googleTtsForNvda/synthDrivers/googleTtsForNvda/web/bridgeHarness.js",
+        "prerequisites": [
+          "Node.js available"
+        ],
+        "recorded_result": "PASS",
+        "interpretation": "Syntax only; no browser/WASM engine or audio worklet execution."
+      },
+      {
+        "name": "Isolated Linux package build",
+        "command": "bash build.sh",
+        "working_directory": "/workspace/review/nvda-build-177bd6ea",
+        "preparation": "Copied the reviewed repository to this disposable directory with .git and __pycache__ excluded. The builder was run in that copy to preserve the original checkout.",
+        "prerequisites": [
+          "Bash",
+          "python3",
+          "Node.js",
+          "zip",
+          "Standard GNU utilities used by build.sh"
+        ],
+        "recorded_result": "PASS: all seven build stages completed; exit code 0.",
+        "recorded_stages": [
+          "Build-artifact cleanup",
+          "Conflict-marker scan",
+          "Python syntax",
+          "JavaScript syntax",
+          "No .zvoice files in source",
+          "Removal of generated __pycache__",
+          "ZIP packaging"
+        ],
+        "artifact": {
+          "path": "/workspace/review/nvda-build-177bd6ea/dist/googleTtsForNvda-0.6.nvda-addon",
+          "bytes": 10765832,
+          "archive_entries": 99,
+          "manifest_at_root": true,
+          "pycache_entries": 0
+        },
+        "interpretation": "The builder intentionally does not run build_i18n.py. A green package build therefore coexists with the confirmed localization failure."
+      },
+      {
+        "name": "Archive structure inspection",
+        "command": "python - <<'PY'\nfrom pathlib import Path\nimport zipfile\npackage = next(Path('/workspace/review/nvda-build-177bd6ea/dist').glob('*.nvda-addon'))\nwith zipfile.ZipFile(package) as archive:\n    names = archive.namelist()\n    print('archive_files=', len(names), 'manifest_at_root=', 'manifest.ini' in names, 'pycache_files=', sum('__pycache__' in name for name in names))\nPY",
+        "prerequisites": [
+          "Python standard library",
+          "The existing isolated build artifact"
+        ],
+        "recorded_result": "PASS: 99 entries, manifest.ini at root, zero __pycache__ entries.",
+        "interpretation": "Archive structure only; does not establish successful NVDA installation or speech."
+      },
+      {
+        "name": "Windows package build",
+        "command": "build.bat",
+        "working_directory": "A disposable Windows candidate checkout",
+        "prerequisites": [
+          "Windows",
+          "Python and Node.js on PATH",
+          "PowerShell/archive tooling required by the existing script"
+        ],
+        "recorded_result": "NOT RUN",
+        "interpretation": "Existing supported Windows packaging entry point; its checks still do not replace actual NVDA runtime acceptance."
+      },
+      {
+        "name": "Pinned-source portable handoff probe",
+        "command": "python docs/reviews/2026-10-22/evidence/portable_probe.py",
+        "working_directory": "Repository checkout with pinned commit 2593b5409c29417965cd34db645a63ecdcaf6af7 available in the Git object store.",
+        "prerequisites": [
+          "Python 3",
+          "Git object for the pinned source commit"
+        ],
+        "side_effects": "Writes docs/reviews/2026-10-22/evidence/portable_probe.json beside the script.",
+        "recorded_result": "PASS: eight source-control-flow probes using fake collaborators; CONFIRMED_GAP: direct English/zh_CN help comparison.",
+        "recorded_checks": [
+          "Configured runtime order and duplicate removal for Edge, Chrome, and Brave.",
+          "BrowserProcessManager start failure cleans the failed profile and continues to Brave.",
+          "Speech-page/WebSocket discovery failure after launch cleans the process/profile and falls through to Brave.",
+          "ChromeTtsBridge.ensure_connection cleans up after CDP connection and harness-readiness failures, then tries the next runtime.",
+          "Cancellation propagates after cleanup without requesting a fallback runtime.",
+          "Edge without WebView2 is skipped when Brave is usable; Edge WebView2 is identified as blocking only when no fallback is usable.",
+          "English help has the setting, memory/runtime-file warning, and Version 0.6 heading; zh_CN help omits them and remains at Version 0.5.5."
+        ],
+        "interpretation": "Selected functions from the pinned Git source were executed with fake browser/CDP collaborators. This verifies source control flow only; it does not exercise native browser processes, WebView2, NVDA, accessibility, or speech.",
+        "evidence_files": [
+          "docs/reviews/2026-10-22/evidence/portable_probe.py",
+          "docs/reviews/2026-10-22/evidence/portable_probe.json"
+        ]
+      }
+    ],
+    "remaining_acceptance": [
+      {
+        "status": "NOT RUN",
+        "area": "Simplified Chinese accessibility and wording",
+        "prerequisites": [
+          "Supported Windows NVDA installation using Simplified Chinese UI",
+          "Candidate add-on",
+          "Native-language reviewer"
+        ],
+        "criteria": [
+          "Verify translated checkbox/status names and 0.6 changelog.",
+          "Tab through the status field; confirm real label association, wrapping and arrow-key review.",
+          "Verify accelerator, OK/Apply and Cancel behavior."
+        ]
+      },
+      {
+        "status": "NOT RUN",
+        "area": "Supported NVDA architecture/version coverage",
+        "prerequisites": [
+          "Supported 32-bit and 64-bit NVDA environments as applicable to declared support",
+          "Candidate package"
+        ],
+        "criteria": [
+          "Install/load the add-on on the intended supported versions.",
+          "Confirm correct CLD2 DLL selection and representative English/Vietnamese language detection.",
+          "Do not infer architecture compatibility from the Linux compile run."
+        ]
+      },
+      {
+        "status": "NOT RUN",
+        "area": "Browser/WASM speech",
+        "prerequisites": [
+          "Windows user session",
+          "Chrome, Edge or Brave",
+          "Edge WebView2 when Edge is effective",
+          "At least one explicitly installed usable voice package"
+        ],
+        "criteria": [
+          "Speak short and long text through the actual WASM engine.",
+          "Verify audio output, rate/pitch/volume, boundary indexes and output-device change behavior.",
+          "Confirm missing voices prompt clearly and do not auto-download."
+        ]
+      },
+      {
+        "status": "NOT RUN",
+        "area": "Cancellation, synth switching and standby",
+        "prerequisites": [
+          "NVDA runtime with candidate package",
+          "Usable voices and browser runtime"
+        ],
+        "criteria": [
+          "Cancel during browser startup, preload and active speech; no late audio enters the next request.",
+          "Switch away during speech/preload and back again; no hung NVDA thread or orphan browser.",
+          "Test background readiness off and on, Voice Manager package-change refresh, and secure-mode gating.",
+          "Verify normal settings and automatic-language profile paths."
+        ]
+      },
+      {
+        "status": "NOT RUN",
+        "area": "Voice package operations and live downloads",
+        "prerequisites": [
+          "Explicitly chosen Voice Manager package operation",
+          "Network access to configured package source"
+        ],
+        "criteria": [
+          "Verify install/import/remove feedback and dependency order on actual NVDA.",
+          "Verify size/SHA256 rejection and cleanup on failed package data.",
+          "Verify operations and progress remain accessible and do not block the main thread."
+        ]
+      },
+      {
+        "status": "NOT RUN",
+        "area": "Updater/runtime installation",
+        "prerequisites": [
+          "Controlled trusted update fixture or approved release package",
+          "NVDA installer UI"
+        ],
+        "criteria": [
+          "Verify check/download/cancel/install lifecycle independently of Settings panel lifetime.",
+          "Verify size and checksum failure handling, temporary-file cleanup, no-update silence for startup checks, and manual error feedback.",
+          "Do not test by publishing or replacing a real release."
+        ]
+      },
+      {
+        "status": "NOT RUN",
+        "area": "Browser-runtime fallback on native Windows/NVDA",
+        "prerequisites": [
+          "Supported Windows user session",
+          "NVDA",
+          "Configured Chrome, Edge, or Brave runtimes",
+          "Edge WebView2 present or intentionally absent for the relevant scenario"
+        ],
+        "criteria": [
+          "With each saved runtime configured, confirm it is tried first, followed by Chrome, Edge, and Brave with duplicates removed.",
+          "Cause process-launch or speech-page/WebSocket-discovery failure after startup; confirm the failed process/profile is cleaned up before the next runtime starts.",
+          "Cause CDP connection, domain-setup, or harness-readiness failure; confirm the failed runtime is closed and the next usable runtime is tried.",
+          "Cancel during startup or CDP/harness readiness; confirm cancellation propagates and no fallback runtime starts.",
+          "With Edge selected, Edge executable present, WebView2 missing, and Brave usable, confirm Edge is skipped and Brave starts without a WebView2 prompt.",
+          "With Edge executable present, WebView2 missing, and no usable Chrome/Brave fallback, confirm the WebView2 repair prompt. If Edge itself is unavailable, confirm the generic no-runtime message."
+        ]
+      }
+    ],
+    "evidence_files": [
+      "docs/reviews/2026-10-22/evidence/portable_probe.py",
+      "docs/reviews/2026-10-22/evidence/portable_probe.json"
+    ],
+    "handoff_completion": "NVDA-1 remains OPEN. No localization repair or native Windows/NVDA runtime acceptance is claimed. The portable probe is source-level evidence from the pinned snapshot and does not certify a release."
+  },
+  "handoff_date": "2026-10-22",
+  "all_findings_status": "OPEN",
+  "implementation_status": "No repairs applied; proposed work only.",
+  "delivery_notes": {
+    "destination_repository": "wwongw21/Google-TTS-For-NVDA",
+    "status": "All findings remain OPEN; documentation transfer only.",
+    "portable_evidence": "The report retains the pinned repository handoff and includes a newly captured portable source probe at docs/reviews/2026-10-22/evidence/portable_probe.json. Historical /workspace paths are references only, not attached files.",
+    "diagnostics_included": [
+      "docs/reviews/2026-10-22/evidence/portable_probe.py (rerunnable source-level probe with fake collaborators)",
+      "docs/reviews/2026-10-22/evidence/portable_probe.json (captured result, provenance, and limitations)"
+    ],
+    "not_included": "The original /workspace/review/edge_nvda.json, browser-capture logs, and historical Linux package artifact were unavailable in this checkout and were not recreated. Original environments, model weights, user data, and complete source snapshots are also not included. The portable probe checks pinned-source control flow with fakes; it is not a live runtime test or a substitute for the original artifacts.",
+    "historical_evidence_references_not_attached": [
+      "/workspace/review/edge_nvda.json",
+      "/workspace/review/nvda-build-177bd6ea/dist/googleTtsForNvda-0.6.nvda-addon"
+    ],
+    "handoff_review_items_updated": [
+      {
+        "reference": "4349788656",
+        "change": "Added portable pinned-source diagnostic evidence and clearly marked the original JSON diagnostic and browser logs unavailable."
+      },
+      {
+        "reference": "4349788668",
+        "change": "Added configured-runtime order, startup/CDP/harness failure cleanup, cancellation, and Edge WebView2 fallback acceptance scenarios; native cases remain NOT RUN."
+      },
+      {
+        "reference": "4349788676",
+        "change": "Expanded the zh_CN repair plan to include localized help, memory/runtime-file warning, Version 0.6 notes, and a manual comparison against English help."
+      }
+    ]
+  }
+}

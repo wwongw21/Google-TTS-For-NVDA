@@ -1,0 +1,154 @@
+{
+  "probe": "portable source-level handoff probe",
+  "captured_on": "2026-10-22",
+  "source_commit": "2593b5409c29417965cd34db645a63ecdcaf6af7",
+  "source_paths": [
+    "googleTtsForNvda/synthDrivers/googleTtsForNvda/bridge.py",
+    "googleTtsForNvda/doc/en/readme.html",
+    "googleTtsForNvda/doc/zh_CN/readme.html"
+  ],
+  "method": "Selected functions were extracted from the pinned Git objects and executed with fake browser/CDP collaborators; help content was compared directly. No browser, NVDA, network service, or WASM engine was launched.",
+  "checks": [
+    {
+      "name": "configured runtime order and de-duplication",
+      "status": "PASS",
+      "results": {
+        "edge": [
+          "edge",
+          "chrome",
+          "brave"
+        ],
+        "brave": [
+          "brave",
+          "chrome",
+          "edge"
+        ],
+        "chrome": [
+          "chrome",
+          "edge",
+          "brave"
+        ]
+      }
+    },
+    {
+      "name": "browser process launch failure cleanup and fallback",
+      "status": "PASS",
+      "attempted": [
+        "edge",
+        "brave"
+      ],
+      "profile_cleanup_remove": [
+        true
+      ],
+      "result": "ws://probe/brave"
+    },
+    {
+      "name": "speech-page discovery failure cleanup and fallback",
+      "status": "PASS",
+      "attempted": [
+        "edge",
+        "brave"
+      ],
+      "profile_cleanup_remove": [
+        true
+      ],
+      "result": "ws://probe/brave"
+    },
+    {
+      "name": "CDP connection failure cleanup and fallback",
+      "status": "PASS",
+      "attempted": [
+        "edge",
+        "chrome"
+      ],
+      "terminated_after_failure": [
+        "edge"
+      ]
+    },
+    {
+      "name": "harness readiness failure cleanup and fallback",
+      "status": "PASS",
+      "attempted": [
+        "edge",
+        "chrome"
+      ],
+      "terminated_after_failure": [
+        "edge"
+      ]
+    },
+    {
+      "name": "cancellation stops without fallback",
+      "status": "PASS",
+      "start_calls": [
+        []
+      ],
+      "terminated": [
+        "edge"
+      ],
+      "cdp_close_count": 1
+    },
+    {
+      "name": "Edge WebView2 missing with usable Brave",
+      "status": "PASS",
+      "choices": [
+        [
+          "brave",
+          "brave.exe"
+        ]
+      ],
+      "Edge_blocks_runtime": false
+    },
+    {
+      "name": "Edge WebView2 missing with no other usable runtime",
+      "status": "PASS",
+      "choices": [],
+      "Edge_is_blocking_condition": true,
+      "error": "Microsoft Edge WebView2 Runtime was not found. Install or repair Microsoft Edge WebView2 Runtime before using Microsoft Edge as the Google TTS For NVDA Chromium browser runtime. | Microsoft Edge executable was found, but Microsoft Edge WebView2 Runtime was not found."
+    },
+    {
+      "name": "Simplified Chinese help comparison",
+      "status": "CONFIRMED_GAP",
+      "English_version_heading": "<h3>Version 0.6 (2026-07-30)</h3>",
+      "zh_CN_version_headings": [
+        "语音设置",
+        "插件设置",
+        "插件更新",
+        "自动语言配置文件",
+        "版本 0.5.5(2026-07-23)",
+        "版本 0.5(2026-07-19)",
+        "版本 0.4(2026-07-16)",
+        "版本 0.3(2026-07-12)",
+        "版本 0.2(2026-07-03)",
+        "版本 0.1.5(2026-07-02)"
+      ],
+      "English_setting_and_warning": "Turn on to let Google TTS prepare the browser runtime and current voice package while another synthesizer is active, so switching back to Google TTS can be faster. This setting is off by default. After you turn it on and press OK or Apply, it may use more memory and keep runtime files open until you turn it off or exit NVDA.",
+      "zh_CN_configuration_labels": [
+        "语音:",
+        "变体:",
+        "语速:",
+        "加速朗读:",
+        "音调:",
+        "音量:",
+        "Chromium 浏览器运行环境:",
+        "Chromium 浏览器运行环境状态:",
+        "使用自动语言配置文件:",
+        "首选配置文件语言:",
+        "自动语言配置文件:",
+        "使用此语言配置文件:",
+        "变体、语速、加速朗读、音调、音量、大写字母音调变化百分比、大写字母提示方式、大写提示音、如支持则使用拼读功能:",
+        "自动语言配置文件状态:",
+        "更新:",
+        "在 NVDA 启动时自动检查插件更新:",
+        "插件更新状态:",
+        "检查更新..."
+      ],
+      "manual_assessment": "The zh_CN configuration list includes browser runtime selection/status but has no background-readiness setting or its memory/runtime-files warning."
+    }
+  ],
+  "limitations": [
+    "The fake collaborators validate source control flow only; they do not prove Windows process, WebSocket, WebView2, NVDA, accessibility, or speech behavior.",
+    "Original /workspace/review/edge_nvda.json and browser-capture logs were not present in this checkout and were not recreated.",
+    "The historical Linux package artifact listed in the handoff was not present in this checkout; its prior recorded result remains historical evidence only.",
+    "Manual native Windows/NVDA acceptance remains NOT RUN."
+  ]
+}
